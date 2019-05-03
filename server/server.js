@@ -4,17 +4,8 @@ var server = require('http').createServer();
 var io = require('socket.io')(server);
 
 io.on('connection', function(client) {
-
-    client.on('test', function() {
-        console.log('test received');
-    });
-
-    client.on("movementInput",function(){
-
-        console.log("Up");
-
-    });
-
+    
+        
     client.on('newplayer',function() {
         client.player = {
             id: server.lastPlayerID++,
@@ -33,10 +24,38 @@ io.on('connection', function(client) {
 
         client.on('disconnect',function() {
             io.emit('remove', client.player.id);
-            console.log('disconnecting: ' + client.player.id);
+            console.log('disconnecting Player: ' + client.player.id);
         });
-    });
 
+        client.on('test', function() {
+        console.log('test received');
+        client.player.x = randomInt(50,400);
+        client.player.y = randomInt(50,400);
+        io.emit('respawn',client.player);
+        console.log('Player '+ client.player.id + 'Location x:' + client.player.x + 'Location y:' + client.player.y);
+        });
+
+        client.on('move_up', function(){
+            io.emit('move_up_from_server', client.player.id);
+        });
+        client.on('move_down', function(){
+            io.emit('move_down_from_server', client.player.id);
+        });
+
+        client.on('move_left', function(){
+            io.emit('move_left_from_server', client.player.id);
+        });
+
+        client.on('move_right', function(){
+            io.emit('move_right_from_server', client.player.id);
+        });
+
+        client.on('stop_movement', function(){
+            io.emit('stop_from_server', client.player.id);
+        });
+                
+    });
+    
 });
 
 server.listen(PORT, function(){
@@ -44,6 +63,7 @@ server.listen(PORT, function(){
 });
 
 server.lastPlayerID = 0;
+
 
 function getAllPlayers(){
     var players = [];
@@ -57,3 +77,5 @@ function getAllPlayers(){
 function randomInt(low, high) {
     return Math.floor(Math.random() * (high - low) + low);
 }
+
+

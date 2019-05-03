@@ -1,0 +1,30 @@
+{
+  "name": "ci328-mp",
+  "version": "1.0.0",
+  "description": " Sem2 code example ",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlmasB/CI328.git"
+  },
+  "keywords": [
+    "Phaser",
+    "Multiplayer",
+    "game",
+    "Node.js",
+    "socket.io"
+  ],
+  "author": "Almas Baimagambetov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AlmasB/CI328/issues"
+  },
+  "homepage": "https://github.com/AlmasB/CI328#readme",
+  "dependencies": {
+    "socket.io": "^2.0.4"
+  }
+}
