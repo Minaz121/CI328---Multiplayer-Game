@@ -53,6 +53,10 @@ io.on('connection', function(client) {
         client.on('stop_movement', function(){
             io.emit('stop_from_server', client.player.id);
         });
+
+        client.on('collision', function(){
+            io.emit('collision', client.player.id);
+        });
                 
     });
     
