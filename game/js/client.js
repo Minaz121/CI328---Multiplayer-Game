@@ -14,6 +14,10 @@ Client.sendClick = function(x,y){
   Client.socket.emit('click',{x:x,y:y});
 };
 
+Client.collison = function(){
+    Client.socket.emit('collision');
+};
+
 Client.socket.on('newplayer',function(data){
     Game.addNewPlayer(data.id,data.x,data.y);
 });
@@ -69,6 +73,10 @@ Client.socket.on('allplayers',function(data){
         Game.playerMap[id].body.velocity.x = 0;
         Game.playerMap[id].body.velocity.y = 0;
 
+    });
+
+    Client.socket.on('collision', function collision_from_server_function(id) {
+        Game.collision(id);
     });
 
  
