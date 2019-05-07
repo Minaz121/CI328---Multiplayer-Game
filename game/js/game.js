@@ -1,6 +1,7 @@
 var Game = {};
 var points;
 var point;
+var alreadyspawned = false;
 Game.init = function(){
     game.stage.disableVisibilityChange = true;
 };
@@ -26,20 +27,51 @@ Game.create = function(){
 
     cursors = game.input.keyboard.createCursorKeys();
 
-    points = game.add.group();
-    point = points.create(100, 100, 'ball');
-    points.enableBody = true;
-    game.physics.arcade.enable(points);
+
+    //points = game.add.group();
+    // points.Game.create(100, 100, 'ball');
+    //     // points.enableBody = true;
+    //     // game.physics.arcade.enable(points);
+
+    //Game.pointSpawner();
+
+
+    if(alreadyspawned == false){
+        Client.socket.emit('position');
+        alreadyspawned=true;
+    }
+    else{
+        console.log("Spawned");
+    }
+
+};
+
+Game.pointSpawner = function(x,y){
+
+    // var x = Client.socket.emit('position');
+    // var y = Client.socket.emit('position');
+
+    point = game.add.sprite(x+100,y+100,'ball');
+    point.enableBody = true;
+    game.physics.arcade.enable(point);
+    point.body.collideWorldBounds = true;
+
 
 };
 
 
 Game.update = function () {
+
+
     Client.socket.emit("collision");
-    var hitBall = game.physics.arcade.collide(Game.playerMap, point);
-    if (hitBall) {
-        point.destroy();
-    }
+    // var hitBall = game.physics.arcade.collide(Game.playerMap, point);
+    // if (hitBall) {
+    //     //point.destroy();
+    //     console.log(Game.pointSpawner());
+    //
+    //
+    // }
+
 
     if(cursors.up.isDown){
 
@@ -76,7 +108,9 @@ Game.collision = function(id){
     var hitBall = game.physics.arcade.collide(Game.playerMap[id], point);
     if (hitBall) {
         console.log("You hit a ball");
-        point.destroy();
+
+        point.kill();
+        Client.socket.emit('position');
     }
 };
 
@@ -127,5 +161,8 @@ Game.removePlayer = function(id){
 
 Game.render = function(){
     game.debug.body(Game.playerMap);
-    game.debug.body(point);
+    //game.debug.body(point);
+    game.world.remove(point);
+
 };
+

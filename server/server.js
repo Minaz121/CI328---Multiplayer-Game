@@ -2,6 +2,7 @@ const PORT = 55000;
 
 var server = require('http').createServer();
 var io = require('socket.io')(server);
+var alreadyspawned = false;
 
 io.on('connection', function(client) {
     
@@ -57,6 +58,14 @@ io.on('connection', function(client) {
         client.on('collision', function(){
             io.emit('collision', client.player.id);
         });
+        client.on('position',function(){
+            var posX = Math.floor(Math.random() * (800 - 200) + 100);
+            var posY = Math.floor(Math.random() * (600 - 100) + 100);
+
+            io.emit('position',posX,posY);
+            console.log("position x"+posX+" position y"+posY);
+
+        });
                 
     });
     
@@ -81,5 +90,6 @@ function getAllPlayers(){
 function randomInt(low, high) {
     return Math.floor(Math.random() * (high - low) + low);
 }
+
 
 

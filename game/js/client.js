@@ -22,6 +22,10 @@ Client.socket.on('newplayer',function(data){
     Game.addNewPlayer(data.id,data.x,data.y);
 });
 
+Client.socket.on('loadedPlayer',function(){
+
+});
+
 Client.socket.on('allplayers',function(data){
     for(var i = 0; i < data.length; i++){
         Game.addNewPlayer(data[i].id,data[i].x,data[i].y);
@@ -77,6 +81,12 @@ Client.socket.on('allplayers',function(data){
 
     Client.socket.on('collision', function collision_from_server_function(id) {
         Game.collision(id);
+    });
+
+    Client.socket.on('position',function positionFromSever(x,y){
+
+        Game.pointSpawner(x,y);
+
     });
 
  
