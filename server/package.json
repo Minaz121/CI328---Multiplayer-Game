@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/AlmasB/CI328#readme",
   "dependencies": {
+    "mysql": "^2.17.1",
     "socket.io": "^2.0.4"
   }
 }

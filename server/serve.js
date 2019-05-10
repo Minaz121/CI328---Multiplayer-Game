@@ -1,5 +1,3 @@
-const PORT = 55000;
-//Disclaimer mysql required with the required tables in order to run the server
 //Database Connection
 var mysql = require('mysql');
 var con = mysql.createConnection({
@@ -14,15 +12,13 @@ con.connect(function(err) {
 
 });
 
+//Socket Connection
+const PORT = 55000;
 var server = require('http').createServer();
 var io = require('socket.io')(server);
+var alreadyspawned = false;
 
-var score = 0;
-var dbSscore =0;
-
-// This variable will be used to hold the player ID and their score
-var pointArr = [];
-
+//Code
 
 io.on('connection', function(client) {
     
@@ -32,12 +28,16 @@ io.on('connection', function(client) {
             id: server.lastPlayerID++,
             x: randomInt(100,400),
             y: randomInt(100,400)
+
         };
+        m = client.player.id;
+
+
+
+
         client.emit('allplayers',getAllPlayers());
         client.broadcast.emit('newplayer',client.player);
 
-        //Pushes the players ID and score in the array
-        pointArr.push({id:client.player.id,score:0});
 
         client.on('click',function(data) {
             console.log('click to '+data.x+', '+data.y);
@@ -46,12 +46,15 @@ io.on('connection', function(client) {
             io.emit('move',client.player);
         });
 
+        client.on('exisitngPlayer',function(){
+
+
+        });
+
         client.on('disconnect',function() {
             io.emit('remove', client.player.id);
             console.log('disconnecting Player: ' + client.player.id);
-
-            //Inserts players ID and player score to the database when the game ends
-            var sql = "INSERT INTO playertable (PlayerUsername,playerScore) VALUES ('" + client.player.id+ "','" + dbSscore+ "')";
+            var sql = "INSERT INTO playertable (PlayerUsername) VALUES ('" + client.player.id+ "')";
             con.query(sql, function (err, result) {
                 if (err) throw err;
                 console.log("player record inserted");
@@ -65,8 +68,6 @@ io.on('connection', function(client) {
         io.emit('respawn',client.player);
         console.log('Player '+ client.player.id + 'Location x:' + client.player.x + 'Location y:' + client.player.y);
         });
-
-        // Movement communication from the client which sends the players id and the function to invoke
 
         client.on('move_up', function(){
             io.emit('move_up_from_server', client.player.id);
@@ -87,12 +88,9 @@ io.on('connection', function(client) {
             io.emit('stop_from_server', client.player.id);
         });
 
-        //
         client.on('collision', function(){
             io.emit('collision', client.player.id);
         });
-
-        //
         client.on('position',function(){
             var posX = Math.floor(Math.random() * (800 - 200) + 100);
             var posY = Math.floor(Math.random() * (600 - 100) + 100);
@@ -102,24 +100,9 @@ io.on('connection', function(client) {
 
         });
 
-        /*This function is used when the anyone of the players hit the coin which will trigger 
-        this function and then finds the specified played ID which hit the coin and add 1 to the score
-        *
-        */
-        client.on('addPoint', function(){
-            for (let i = 0; i <=pointArr.length ; i++) {
-
-                if(pointArr[i].id === client.player.id) {
-                    pointArr[i].score++;
-                    dbSscore++;
-                    console.log(pointArr[i]);
-                    break;
-                }
-            }
-
-        });
                 
     });
+
     
 });
 
@@ -127,10 +110,7 @@ server.listen(PORT, function(){
     console.log('Listening on ' + server.address().port);
 });
 
-
-
 server.lastPlayerID = 0;
-
 
 function getAllPlayers(){
     var players = [];
